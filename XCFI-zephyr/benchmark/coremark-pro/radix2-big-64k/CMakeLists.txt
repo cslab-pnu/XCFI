@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: Apache-2.0
+
+cmake_minimum_required(VERSION 3.20.0)
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+project(radix2-big-64k)
+add_compile_definitions(PROJECT_NAME="${PROJECT_NAME}")
+
+target_sources(app PRIVATE src/radix2-big-64k.c
+    src/fft_radix2.c
+    src/2K.c
+    src/32K.c
+    src/4K.c
+    src/data3_big.c
+    src/data4_mid.c
+    src/data5_small.c
+
+    src/mith/th_lib.c
+    src/mith/mith_workload.c
+    src/mith/mith_lib.c
+    src/mith/th_bignum.c
+    src/mith/th_rand.c
+
+    src/mith/al/th_al.c
+    src/mith/al/al_smp.c
+    src/mith/al/al_single.c
+)
+
+target_compile_definitions(app PRIVATE
+    USE_FP64=1
+)
+

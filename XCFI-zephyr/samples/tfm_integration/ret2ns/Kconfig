@@ -1,0 +1,23 @@
+# Private config options for the ret2ns TF-M integration sample.
+
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "ret2ns TF-M integration sample"
+
+menu "ret2ns evaluation configuration"
+
+config RET2NS_CUSTOM_SVC
+	bool "Enable the ret2ns custom SVC hook"
+	depends on ARMV7_M_ARMV8_M_MAINLINE
+	select CURRENT_THREAD_USE_NO_TLS
+	default n
+	help
+	  Add a Zephyr SVC dispatch entry used by this sample to call the
+	  ret2ns secure veneers from NS handler mode.
+	  This also disables the generic TLS current-thread fast path for this
+	  sample so user-mode entry reaches the ret2ns SVC directly instead of
+	  first issuing Zephyr's internal current-thread syscall.
+
+endmenu
+
+source "Kconfig.zephyr"

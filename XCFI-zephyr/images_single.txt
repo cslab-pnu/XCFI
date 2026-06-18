@@ -1,0 +1,7 @@
+TITLE: Arm MPS3 FPGA prototyping board Images Configuration File
+[IMAGES]
+TOTALIMAGES: 1                          ;Number of Images (Max: 32)
+
+IMAGE0UPDATE: RAM
+IMAGE0ADDRESS: 0x01_00_1100_0000
+IMAGE0FILE: \SOFTWARE\zephyr.bin

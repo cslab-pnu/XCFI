@@ -1,0 +1,25 @@
+/ {
+	aliases {
+		motor-dir = &motor_dir_pin;
+		motor-step = &motor_step_pin;
+		led0 = &led0_pin;
+	};
+
+	gpios {
+		compatible = "gpio-leds";
+
+		/* Temporary mapping: replace gpio0/pin numbers after checking MPS3 pinout */
+		motor_dir_pin: motor_dir_pin {
+			gpios = <&gpio0 2 0>;
+		};
+
+		motor_step_pin: motor_step_pin {
+			gpios = <&gpio0 3 0>;
+		};
+
+		/* On-board MPS3 LED 0 */
+		led0_pin: led0_pin {
+			gpios = <&gpio_led0 0>;
+		};
+	};
+};

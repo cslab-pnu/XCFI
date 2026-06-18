@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: Apache-2.0
+
+cmake_minimum_required(VERSION 3.20.0)
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+project(sha-test)
+add_compile_definitions(PROJECT_NAME="${PROJECT_NAME}")
+
+target_sources(app PRIVATE src/sha-test.c
+    src/sha256.c
+    src/shabench.c
+
+    src/mith/th_lib.c
+    src/mith/mith_workload.c
+    src/mith/mith_lib.c
+    src/mith/th_bignum.c
+    src/mith/th_rand.c
+
+    src/mith/al/th_al.c
+    src/mith/al/al_smp.c
+    src/mith/al/al_single.c
+)
+
+target_compile_definitions(app PRIVATE
+)
+

@@ -1,0 +1,28 @@
+/ {
+    aliases {
+        motor-dir = &motor_dir_pin;
+        motor-step = &motor_step_pin;
+        trigger = &trigger_pin;
+        big-trigger = &big_trigger_pin;
+    };
+
+    motor_dir_pin: motor_dir_pin {
+        gpios = <&gpioa 2 GPIO_ACTIVE_HIGH>;
+        label = "Motor Direction";
+    };
+
+    motor_step_pin: motor_step_pin {
+        gpios = <&gpioa 3 GPIO_ACTIVE_HIGH>;
+        label = "Motor Step";
+    };
+
+    trigger_pin: trigger_pin {
+        gpios = <&gpioa 5 GPIO_ACTIVE_LOW>;
+        label = "Trigger";
+    };
+
+    big_trigger_pin: big_trigger_pin {
+        gpios = <&gpioa 4 GPIO_ACTIVE_LOW>;
+        label = "Big Trigger";
+    };
+};

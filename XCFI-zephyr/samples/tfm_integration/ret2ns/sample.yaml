@@ -1,0 +1,21 @@
+sample:
+  description: ret2ns security evaluation sample using Zephyr NSPE and TF-M SPE.
+  name: TF-M ret2ns evaluation
+tests:
+  sample.tfm.ret2ns:
+    skip: true
+    tags:
+      - trusted-firmware-m
+      - security
+      - arm
+    platform_allow:
+      - mps3/corstone310/an555/ns
+      - mps2/an521/cpu0/ns
+    integration_platforms:
+      - mps3/corstone310/an555/ns
+    harness: console
+    harness_config:
+      type: multi_line
+      regex:
+        - "ret2ns: target=(.*)"
+        - "ret2ns: dropping NS privilege on current main thread(.*)"
