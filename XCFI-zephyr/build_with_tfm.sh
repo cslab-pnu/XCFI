@@ -33,7 +33,12 @@ if [ "$COMPILE_MODE" = "base" ]; then
 fi
 
 if [ "$1" = "samples/tfm_integration/ret2ns" ]; then
-    CFLAGS="$CFLAGS -D$3"
+	if [ "$#" -lt 3 ]; then
+		echo "You can choose attack numbers, default: 1"
+		CFLAGS="$CFLAGS -DATTACK2"
+	else
+    		CFLAGS="$CFLAGS -D$3"
+	fi
 fi
 
 # trio-snprintf
@@ -51,6 +56,7 @@ fi
 #west flash
 
 echo $CFLAGS
+echo $EXTRA_LDFLAGS
 west build -p always -b mps3/corstone310/an555/ns $1 -DZEPHYR_TOOLCHAIN_VARIANT=llvm -DCMAKE_C_FLAGS="$CFLAGS" \
     -DCMAKE_ASM_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CFLAGS" -DCOMPILE_MODE=${COMPILE_MODE} \
     -DCONFIG_BUILD_WITH_TFM=y

@@ -69,7 +69,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=lld \
     -isystem ${XCFI_ROOT}/modules/hal/cmsis/CMSIS/Core/Include/m-profile")
 
 if (DEFINED COMPILE_MODE)
-    if (COMPILE_MODE STREQUAL all)
+    if (COMPILE_MODE STREQUAL xcfi)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mbranch-protection=bti+pac-ret -mllvm -enable-XCFI=all -mllvm -enable-arm-secure-cfi -fno-jump-tables")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-XCFI-lld -Wl,--undefined=XCFI_fault")
     elseif (COMPILE_MODE STREQUAL forward)

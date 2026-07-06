@@ -202,7 +202,7 @@ for how the attack variant is selected.
 Terminal 1:
 
 ```
-$ ./build_with_tfm.sh samples/tfm_integration/ret2ns xcfi
+$ ./build_with_tfm.sh samples/tfm_integration/ret2ns xcfi ATTACK2
 $ ./flash_with_tfm.sh
 ```
 
@@ -213,7 +213,7 @@ $ picocom -b 115200 /dev/ttyUSB0
 > reboot
 ```
 
-Terminal 3 — expected output:
+Terminal 3 — expected output (ATTACK2) :
 
 ```
 $ picocom -b 115200 /dev/ttyUSB1
@@ -241,6 +241,40 @@ secure state
             msg ptr : 0x2102311c
                                 msg size : 4
                                             [XCFI] Control-flow violation detected in Secure world!
+```
+
+Terminal 3 — expected output (ATTACK1 - boot loop) :
+
+```
+[INF] Starting bootloader
+[WRN] This device was provisioned with dummy keys. This device is NOT SECURE
+[INF] PSA Crypto init done, sig_type: EC-P256, using builtin keys
+[INF] Image index: 1, Swap type: none
+[INF] Image index: 0, Swap type: none
+[INF] Bootloader chainload address offset: 0x0
+[INF] Image version: v0.0.0
+[INF] Jumping to the first image slot
+Booting TF-M v2.2.1+g91851d4a8
+[WRN] This device was provisioned with dummy keys. This device is NOT SECURE
+[Sec Thread] Secure image initializing!
+TF-M isolation level is: 0x00000001
+[INF][PS] Encryption alg: 0x5500200
+[INF][Crypto] Provision entropy seed...
+[INF][Crypto] Provision entropy seed... complete.
+[DBG][Crypto] Init Mbed TLS 3.6.4...
+[DBG][Crypto] Internal heap size is 12288 bytes
+[DBG][Crypto] Init Mbed TLS 3.6.4... complete.
+*** Booting Zephyr OS build 91851d4a8905 ***
+*** XCFI enabled ***
+secure state
+            msg ptr : 0x2102311c
+                                msg size : 4
+
+FATAL ERROR: UsageFault
+Here is some context for the exception:
+    EXC_RETURN (LR): 0xFFFFFFFD
+    Exception came from secure FW in thread mode.
+...
 ```
 
 XCFI detects the control-flow violation and stops the attack. (In `base` mode
