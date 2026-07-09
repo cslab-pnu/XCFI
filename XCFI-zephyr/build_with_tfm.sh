@@ -34,7 +34,7 @@ fi
 
 if [ "$1" = "samples/tfm_integration/ret2ns" ]; then
 	if [ "$#" -lt 3 ]; then
-		echo "You can choose attack numbers, default: 1"
+		echo "You can choose attack numbers, default: 2"
 		CFLAGS="$CFLAGS -DATTACK2"
 	else
     		CFLAGS="$CFLAGS -D$3"

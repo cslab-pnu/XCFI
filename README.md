@@ -7,6 +7,55 @@ XCFI is implemented by extending the LLVM toolchain and integrating with **Zephy
 
 ---
 
+## Artifact Availability
+
+The artifact is available from:
+
+- GitHub: https://github.com/cslab-pnu/XCFI
+- Zenodo: https://doi.org/10.5281/zenodo.20195744
+
+The Zenodo archive contains the same source tree and scripts used for artifact evaluation. If this repository is updated during artifact evaluation, the corresponding Zenodo archive is updated as well.
+
+---
+
+## Tested Environment and Dependencies
+
+The artifact was tested with the following environment.
+
+### Hardware
+
+- Arm MPS3 FPGA board
+- AN555 FPGA image
+- Armv8.1-M Cortex-M85 core
+- TrustZone-M enabled
+- PACBTI extension enabled
+- MPU enabled
+- DWT cycle counter used for measurements
+
+The MPS3/AN555 board is not generally available, so the artifact evaluation was performed through remote access to a pre-configured board.
+
+### Host Software
+
+- Ubuntu 22.04
+- Modified LLVM 21
+- Zephyr v4.3
+- Trusted Firmware-M v2.2
+
+On a clean Ubuntu 22.04 host, `install_llvm.sh` installs the modified LLVM toolchain, and `zephyr_setup.sh` installs the Zephyr/TF-M environment and the remaining dependencies.
+
+### Benchmarks and Samples
+
+The artifact includes:
+
+- BEEBS benchmarks
+- Zephyr `tfm_integration` samples:
+  - `psa_crypto`
+  - `tfm_ipc`
+  - `tfm_secure_partition`
+- The ported `ret2ns` attack sample
+
+---
+
 ## Citation
 
 If you use this work or parts of it, please cite our paper as follows:
@@ -39,10 +88,21 @@ This directory contains the Trusted Firmware-M (TF-M) integration for XCFI.
 
 ## Build and Setup
 
-To set up the build environment, run the following scripts in the repository root:
+On a clean Ubuntu 22.04 host, clone the repository and run the setup scripts:
 
-- `install_llvm.sh` installs the modified LLVM toolchain required for XCFI.
-- `zephyr_setup.sh` sets up the Zephyr development environment.
+```
+sh
+git clone https://github.com/cslab-pnu/XCFI.git
+cd XCFI
+./install_llvm.sh
+./zephyr_setup.sh
+cd XCFI-zephyr
+```
+
+The setup scripts perform the following tasks:
+
+- `install_llvm.sh` installs the modified LLVM 21 toolchain required for XCFI.
+- `zephyr_setup.sh` sets up the Zephyr v4.3 and TF-M v2.2 development environment and installs the remaining dependencies.
 
 After the setup is complete, navigate to the `XCFI-zephyr/` directory.
 This directory contains the script `build_with_tfm.sh`, which builds the system together with TF-M and produces three images:
@@ -102,6 +162,23 @@ configuration/management console (used to reboot it after flashing), and
 In each claim below, Terminal 1 shows the build/flash commands and Terminal 3
 shows the expected output. After flashing in Terminal 1, switch to Terminal 2
 and run `reboot`.
+
+### Exiting `picocom` and serial-port troubleshooting
+
+To exit `picocom` cleanly and release the serial port:
+
+```
+Ctrl+A, then Ctrl+X
+```
+Alternatively, `Ctrl+A` followed by `Ctrl+Q` quits without resetting the serial port on exit.
+
+If the terminal is closed without exiting `picocom` cleanly, the serial port may remain locked. This can cause errors such as:
+
+```
+FATAL: cannot lock /dev/ttyUSB0: Resource temporarily unavailable
+```
+In that case, terminate the stale `picocom` process or reconnect the serial session, then reopen the console.
+If the application output on `/dev/ttyUSB1` appears stale, truncated, or garbled after repeated flashing/runs, close and reopen the `picocom` session and type `reset` on the board configuration console (`/dev/ttyUSB0`).
 
 ### Claim 1 — Benchmark execution (BEEBS / bubblesort)
 
@@ -193,11 +270,21 @@ legitimate cross-domain control flow.
 ### Claim 3 — Security evaluation (ret2ns, forward-edge)
 
 This runs the `ret2ns` sample, which mounts a ret2ns-style control-flow attack
-against TF-M's Non-Secure-Callable veneers. We use the **attack 2** variant, a
-BLXNS-style forward-edge attack that tries to redirect control across the Secure
-boundary. See
-[`samples/tfm_integration/ret2ns/README.rst`](XCFI-zephyr/samples/tfm_integration/ret2ns/README.rst)
-for how the attack variant is selected.
+against TF-M's Non-Secure-Callable veneers. The artifact provides two `ret2ns` attack variants:
+
+| Script argument  | Compiler definition | Meaning                                |
+|------------------|---------------------|----------------------------------------|
+| `ATTACK1`        | `-DATTACK1`         | backward-edge BXNS-style ret2ns attack |
+|------------------|---------------------|----------------------------------------|
+| `ATTACK2`        | `-DATTACK2`         | forward-edge BLXNS-style ret2ns attack |
+
+
+The `ret2ns` sample provides two attack variants selected by the optional fourth argument of `build_with_tfm.sh`:
+```
+./build_with_tfm.sh samples/tfm_integration/ret2ns <mode> <attack>
+```
+
+We use the **attack 2** variant, a BLXNS-style forward-edge attack that tries to redirect control across the Secure boundary. 
 
 Terminal 1:
 
@@ -243,7 +330,10 @@ secure state
                                             [XCFI] Control-flow violation detected in Secure world!
 ```
 
-Terminal 3 — expected output (ATTACK1 - boot loop) :
+
+The following output is provided for reference when ATTACK1 is selected instead of ATTACK2. ATTACK1 exercises the backward-edge BXNS-style variant and may result in a UsageFault/boot-loop after the violation.
+
+Terminal 3 — reference output for ATTACK1 :
 
 ```
 [INF] Starting bootloader
