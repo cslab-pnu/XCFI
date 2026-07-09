@@ -178,7 +178,11 @@ If the terminal is closed without exiting `picocom` cleanly, the serial port may
 FATAL: cannot lock /dev/ttyUSB0: Resource temporarily unavailable
 ```
 In that case, terminate the stale `picocom` process or reconnect the serial session, then reopen the console.
-If the application output on `/dev/ttyUSB1` appears stale, truncated, or garbled after repeated flashing/runs, close and reopen the `picocom` session and type `reset` on the board configuration console (`/dev/ttyUSB0`).
+If the application output on `/dev/ttyUSB1` appears stale, truncated, or garbled after repeated flashing/runs, try the following recovery steps:
+1. Close and reopen the `picocom` session on `/dev/ttyUSB1`.
+2. Type `reset` on the board console (`/dev/ttyUSB0`) tot restart the currently loaded image.
+3. If the output is still corrupte, flash another example image, type `reboot` on `/dev/ttyUSB0`, then flash the intended example again and type `reboot` once more.
+Here, `reset` restarts the currently loaded image, while `reboot` reloads the newly flashed image set.
 
 ### Claim 1 — Benchmark execution (BEEBS / bubblesort)
 
@@ -330,7 +334,7 @@ secure state
 ```
 
 
-The following output is provided for reference when ATTACK1 is selected instead of ATTACK2. ATTACK1 exercises the backward-edge BXNS-style variant and may result in a UsageFault/boot-loop after the violation.
+The following output is provided for reference when ATTACK1 is selected instead of ATTACK2. ATTACK1 exercises the backward-edge BXNS-style variant and may result in a UsageFault after the violation.
 
 Terminal 3 — reference output for ATTACK1 :
 
@@ -363,7 +367,44 @@ FATAL ERROR: UsageFault
 Here is some context for the exception:
     EXC_RETURN (LR): 0xFFFFFFFD
     Exception came from secure FW in thread mode.
-...
+    xPSR:    0xA0000006
+    MSP:     0x31001D18
+    PSP:     0x3100CBA8
+    MSP_NS:  0x21021040
+    PSP_NS:  0x21023118
+    Exception frame at: 0x3100CBA8
+       (Note that the exception frame may be corrupted for this type of error.)
+        R0:   0x00000000
+        R1:   0xFEF5EDA5
+        R2:   0xFEF5EDA5
+        R3:   0x00000000
+        R12:  0x00000000
+        LR:   0x00000000
+        PC:   0x38026D2A
+        xPSR: 0x81000000
+    Callee saved register state:
+        R4:   0x00000000
+        R5:   0x280860E0
+        R6:   0x28086660
+        R7:   0x00000000
+        R8:   0x28086678
+        R9:   0x28086678
+        R10:  0xDEADBEEF
+        R11:  0x00000000
+    CFSR:  0x00020000
+    BFSR:  0x00000000
+    BFAR:  Not Valid
+    MMFSR: 0x00000000
+    MMFAR: Not Valid
+    UFSR:  0x00000002
+    HFSR:  0x00000000
+    SFSR:  0x00000000
+    SFAR: Not Valid
+[XCFI] CFSR: 0x00020000
+[XCFI] UFSR: 0x00000002
+[XCFI] CFSR_NS: 0x00000000
+[XCFI] UFSR_NS: 0x00000000
+[XCFI] UFSR.INVSTATE set; PAC/AUT failure is possible.
 ```
 
 XCFI detects the control-flow violation and stops the attack. (In `base` mode

@@ -103,18 +103,17 @@ void C_UsageFault_Handler(void)
     ufsr = (ctx.CFSR & SCB_CFSR_USGFAULTSR_Msk) >> SCB_CFSR_USGFAULTSR_Pos;
     ufsr_ns = (ctx.CFSR_NS & SCB_CFSR_USGFAULTSR_Msk) >> SCB_CFSR_USGFAULTSR_Pos;
     invstate = SCB_CFSR_INVSTATE_Msk >> SCB_CFSR_USGFAULTSR_Pos;
-
     SPMLOG_ERRMSGVAL("[XCFI] CFSR: ", ctx.CFSR);
     SPMLOG_ERRMSGVAL("[XCFI] UFSR: ", ufsr);
     SPMLOG_ERRMSGVAL("[XCFI] CFSR_NS: ", ctx.CFSR_NS);
     SPMLOG_ERRMSGVAL("[XCFI] UFSR_NS: ", ufsr_ns);
     if (((ufsr | ufsr_ns) & invstate) != 0U) {
         SPMLOG_ERRMSG("[XCFI] UFSR.INVSTATE set; PAC/AUT failure is possible.\r\n");
+	while(1) {}
     } else {
         SPMLOG_ERRMSG("[XCFI] UFSR.INVSTATE is clear; PAC/AUT failure is not confirmed by fault status.\r\n");
     }
-#else
-    SPMLOG_ERRMSG("[XCFI] Secure UsageFault occurred; enable TFM_EXCEPTION_INFO_DUMP to inspect UFSR.\r\n");
+
 #endif
 
     tfm_core_panic();
