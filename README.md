@@ -275,7 +275,6 @@ against TF-M's Non-Secure-Callable veneers. The artifact provides two `ret2ns` a
 | Script argument  | Compiler definition | Meaning                                |
 |------------------|---------------------|----------------------------------------|
 | `ATTACK1`        | `-DATTACK1`         | backward-edge BXNS-style ret2ns attack |
-|------------------|---------------------|----------------------------------------|
 | `ATTACK2`        | `-DATTACK2`         | forward-edge BLXNS-style ret2ns attack |
 
 
